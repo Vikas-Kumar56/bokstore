@@ -1,5 +1,6 @@
 package com.weCode.bookStore.service;
 
+import com.weCode.bookStore.dto.UserDto;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,16 +13,17 @@ import java.util.ArrayList;
 @Service
 public class UserDetailService implements UserDetailsService {
 
-    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
-    public UserDetailService(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+    public UserDetailService(PasswordEncoder passwordEncoder, UserService userService) {
+        this.userService = userService;
     }
 
     // this is the function which is used by spring security for loading user from db
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // this is the function which is used by spring security for loading user from db
-        return new User("peter@gmail.com", passwordEncoder.encode("password"), new ArrayList<>());
+        UserDto userByEmail = userService.getUserByEmail(username);
+        return new User(userByEmail.getEmail(), userByEmail.getPassword(), new ArrayList<>());
     }
 }
